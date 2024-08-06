@@ -36,7 +36,7 @@ func main() {
     // Get port from environment variable
     port := os.Getenv("PORT")
     if port == "" {
-        port = "3000" // Default port if not specified
+        port = "5001" // Default port if not specified
     }
 
     // Handle graceful shutdown
