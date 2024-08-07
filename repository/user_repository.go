@@ -6,23 +6,24 @@ import (
 	"trocup-user/models"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var userCollection *mongo.Collection
+var UserCollection *mongo.Collection
 
 func InitUserRepository() {
-    userCollection = config.Client.Database("user_dev").Collection("user")
+    UserCollection = config.Client.Database("user_dev").Collection("user")
 }
 
 func CreateUser(user *models.User) error {
-    _, err := userCollection.InsertOne(context.TODO(), user)
+    _, err := UserCollection.InsertOne(context.TODO(), user)
     return err
 }
 
 func GetUsers() ([]models.User, error) {
     var users []models.User
-    cursor, err := userCollection.Find(context.TODO(), bson.D{})
+    cursor, err := UserCollection.Find(context.TODO(), bson.D{})
     if err != nil {
         return nil, err
     }
@@ -30,8 +31,25 @@ func GetUsers() ([]models.User, error) {
 
     for cursor.Next(context.TODO()) {
         var user models.User
-        cursor.Decode(&user)
+        if err := cursor.Decode(&user); err != nil {
+            return nil, err
+        }
         users = append(users, user)
     }
+
+    if err := cursor.Err(); err != nil {
+        return nil, err
+    }
+
     return users, nil
+}
+
+func GetUserByID(id primitive.ObjectID) (*models.User, error) {
+    var user models.User
+    filter := bson.M{"_id": id}
+    err := UserCollection.FindOne(context.TODO(), filter).Decode(&user)
+    if err != nil {
+        return nil, err
+    }
+    return &user, nil
 }

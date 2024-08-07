@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    ports:
+      - "5001:5001"
+    environment:
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
+      - PORT=5001
+  mongodb:
+    image: mongo
+    ports:
+      - "27016:27016"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
