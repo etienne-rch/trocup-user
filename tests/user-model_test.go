@@ -5,7 +5,6 @@ import (
 	"time"
 	"trocup-user/models"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -23,7 +22,7 @@ func TestUser(t *testing.T) {
 		Citycode: 123,
 		GeoPoints: models.GeoPoints{
 			Type:        "Point",
-			Coordinates: [2]bson.A{{1.0, 2.0}},
+			Coordinates: []float64{1.0, 2.0},
 		},
 	}
 
@@ -82,7 +81,9 @@ func TestUser(t *testing.T) {
 	if user.Address.GeoPoints.Type != address.GeoPoints.Type {
 		t.Errorf("expected GeoPoints.Type to be %s, got %s", address.GeoPoints.Type, user.Address.GeoPoints.Type)
 	}
-	if user.Address.GeoPoints.Coordinates[0][0] != address.GeoPoints.Coordinates[0][0] || user.Address.GeoPoints.Coordinates[0][1] != address.GeoPoints.Coordinates[0][1] {
+	if len(user.Address.GeoPoints.Coordinates) != len(address.GeoPoints.Coordinates) ||
+		user.Address.GeoPoints.Coordinates[0] != address.GeoPoints.Coordinates[0] ||
+		user.Address.GeoPoints.Coordinates[1] != address.GeoPoints.Coordinates[1] {
 		t.Errorf("expected GeoPoints.Coordinates to be %v, got %v", address.GeoPoints.Coordinates, user.Address.GeoPoints.Coordinates)
 	}
 
