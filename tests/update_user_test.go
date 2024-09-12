@@ -13,7 +13,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestUpdateUser(t *testing.T) {
@@ -23,13 +22,12 @@ func TestUpdateUser(t *testing.T) {
 
 	// Insérer un utilisateur pour le test
 	user := models.User{
-		ID:          primitive.NewObjectID(),
+		ID:          "clerk_user_id_12345",
 		Version:     1,
 		Pseudo:      "testuser",
 		Name:        "John",
 		Surname:     "Doe",
 		Email:       "john.doe@example.com",
-		Password:    "password123",
 		Sexe:        "M",
 		PhoneNumber: "1234567890",
 		IsPremium:   false,
@@ -42,14 +40,13 @@ func TestUpdateUser(t *testing.T) {
 		Name:        "Jane",
 		Surname:     "Doe",
 		Email:       "jane.doe@example.com",
-		Password:    "newpassword123",
 		Sexe:        "F",
 		PhoneNumber: "0987654321",
 		IsPremium:   true,
 	}
 
 	jsonUser, _ := json.Marshal(updatedUser)
-	req := httptest.NewRequest("PUT", "/users/"+user.ID.Hex(), bytes.NewReader(jsonUser))
+	req := httptest.NewRequest("PUT", "/users/"+user.ID, bytes.NewReader(jsonUser))
 	req.Header.Set("Content-Type", "application/json")
 	resp, _ := app.Test(req, -1)
 

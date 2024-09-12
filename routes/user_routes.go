@@ -10,14 +10,14 @@ import (
 func UserRoutes(app *fiber.App) {
 	app.Get("/health", handlers.HealthCheck)
 	
-	app.Post("/register", handlers.Register)
-	app.Post("/login", handlers.Login)
+	//app.Post("/register", handlers.Register)
+	//app.Post("/login", handlers.Login)
 
-	api := app.Group("/api", middleware.JWTProtected())
+	api := app.Group("/api", middleware.ClerkAuthMiddleware)
 
+	api.Get("/users/:id", handlers.GetUserByID)
 	api.Post("/users", handlers.CreateUser)
 	api.Get("/users", handlers.GetUsers)
-	api.Get("/users/:id", handlers.GetUserByID)
 	api.Put("/users/:id", handlers.UpdateUser)
 	api.Delete("/users/:id", handlers.DeleteUser)
 }

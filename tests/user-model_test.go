@@ -9,10 +9,8 @@ import (
 )
 
 func TestUser(t *testing.T) {
-	id, err := primitive.ObjectIDFromHex("507f1f77bcf86cd799439011")
-	if err != nil {
-		t.Fatalf("failed to create ObjectID: %v", err)
-	}
+	id := "clerk_user_id_12345"
+	
 
 	now := time.Now()
 	address := models.Address{
@@ -39,7 +37,6 @@ func TestUser(t *testing.T) {
 		Surname:          "Doe",
 		Address:          address,
 		Email:            "johndoe@example.com",
-		Password:         "password",
 		Sexe:             "M",
 		ActivityStatus:   activityStatus,
 		BirthDate:        now.AddDate(-30, 0, 0),
@@ -90,9 +87,7 @@ func TestUser(t *testing.T) {
 	if user.Email != "johndoe@example.com" {
 		t.Errorf("expected Email to be 'johndoe@example.com', got %s", user.Email)
 	}
-	if user.Password != "password" {
-		t.Errorf("expected Password to be 'password', got %s", user.Password)
-	}
+	
 	if user.Sexe != "M" {
 		t.Errorf("expected Sexe to be 'M', got %s", user.Sexe)
 	}

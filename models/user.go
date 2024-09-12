@@ -7,18 +7,18 @@ import (
 )
 
 type Address struct {
-    Street   string `json:"street" bson:"street" validate:"required"`
-    City     string `json:"city" bson:"city" validate:"required"`
-    Postcode int    `json:"postcode" bson:"postcode" validate:"required"`
+    Street   string `json:"street" bson:"street"`
+    City     string `json:"city" bson:"city"`
+    Postcode int    `json:"postcode" bson:"postcode"`
     Citycode int    `json:"citycode" bson:"citycode"`
     Floor    int    `json:"floor,omitempty" bson:"floor,omitempty"`
     Extra    string `json:"extra,omitempty" bson:"extra,omitempty"`
-    GeoPoints  GeoPoints     `json:"geopoints" bson:"geopoints" validate:"required"`
+    GeoPoints  GeoPoints     `json:"geopoints" bson:"geopoints"`
 }
 
 type GeoPoints struct {
-    Type        string           `json:"type" bson:"type" validate:"required,eq=Point"`
-    Coordinates []float64 `json:"coordinates" bson:"coordinates" validate:"required"`
+    Type        string           `json:"type" bson:"type" validate:"eq=Point"` 
+    Coordinates []float64        `json:"coordinates" bson:"coordinates"`
 }
 
 type ActivityStatus struct {
@@ -27,23 +27,22 @@ type ActivityStatus struct {
 }
 
 type BankInfo struct {
-    IBAN string `json:"iban" bson:"iban" validate:"required"`
-    BIC  string `json:"bic" bson:"bic" validate:"required"`
+    IBAN string `json:"iban" bson:"iban"`
+    BIC  string `json:"bic" bson:"bic"`  
 }
 
 type User struct {
-    ID               primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+    ID               string             `json:"id,omitempty" bson:"_id,omitempty"` // Clerk's user ID
     Version          int                `json:"version" bson:"version"`
     Pseudo           string             `json:"pseudo" bson:"pseudo" validate:"required"`
     Name             string             `json:"name" bson:"name" validate:"required"`
     Surname          string             `json:"surname" bson:"surname" validate:"required"`
-    Address          Address            `json:"address" bson:"address" validate:"required,dive"`
+    Address          Address            `json:"address" bson:"address"`
     Email            string             `json:"email" bson:"email" validate:"required,email"`
-    Password         string             `json:"password" bson:"password" validate:"required,min=6"`
-    Sexe             string             `json:"sexe" bson:"sexe" validate:"required,oneof=M F"`
+    Sexe             string             `json:"sexe" bson:"sexe" validate:"oneof=M F"`
     PhoneNumber      string             `json:"phoneNumber,omitempty" bson:"phoneNumber,omitempty" validate:"omitempty,e164"`
     ActivityStatus   ActivityStatus     `json:"activityStatus" bson:"activityStatus"`
-    BirthDate        time.Time          `json:"birthDate" bson:"birthDate" validate:"required"`
+    BirthDate        time.Time          `json:"birthDate" bson:"birthDate"`
     BankInfo         *BankInfo          `json:"bankInfo,omitempty" bson:"bankInfo,omitempty"`
     AvatarUrl        string             `json:"avatarUrl,omitempty" bson:"avatarUrl,omitempty"`
     IsPremium        bool               `json:"isPremium" bson:"isPremium"`

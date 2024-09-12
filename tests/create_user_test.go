@@ -12,7 +12,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestCreateUser(t *testing.T) {
@@ -21,13 +20,12 @@ func TestCreateUser(t *testing.T) {
 	app.Post("/users", handlers.CreateUser)
 
 	user := models.User{
-		ID:          primitive.NewObjectID(),
+		ID:          "clerk_user_id_12345",
 		Version:     1,
 		Pseudo:      "testuser",
 		Name:        "John",
 		Surname:     "Doe",
 		Email:       "john.doe@example.com",
-		Password:    "password123",
 		Sexe:        "M",
 		PhoneNumber: "1234567890",
 		IsPremium:   false,
