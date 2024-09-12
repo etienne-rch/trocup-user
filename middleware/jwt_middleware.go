@@ -1,24 +1,38 @@
-package middleware
+package handlers
 
 import (
-	"os"
-
-	jwtware "github.com/gofiber/contrib/jwt"
+	"github.com/clerk/clerk-sdk-go/v2/user"
 	"github.com/gofiber/fiber/v2"
 )
 
-func JWTProtected() fiber.Handler {
-	return jwtware.New(jwtware.Config{
-		SigningKey: jwtware.SigningKey{Key: []byte(os.Getenv("JWT_SECRET"))},
-		ErrorHandler: jwtError,
-	})
-}
+func GetUserByID(c *fiber.Ctx) error {
+	// Get user ID from params
+	userID := c.Params("id")
 
-func jwtError(c *fiber.Ctx, err error) error {
+	// Get context from request
+	ctx := c.Context()
+
+	// Fetch user details from Clerk using the user ID
+	usr, err := user.Get(ctx, userID)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Unauthorized",
+		// Handle the error, return 500 if something went wrong
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal server error",
 		})
 	}
-	return nil
+
+	// If the user is not found
+	if usr == nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "User not found",
+		})
+	}
+
+	// Return user details in the response
+	return c.JSON(fiber.Map{
+		"id":        usr.ID,
+		"firstName": *usr.FirstName,
+		"lastName":  *usr.LastName,
+		"email":     *usr.Email,
+	})
 }
