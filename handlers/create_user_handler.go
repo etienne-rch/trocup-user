@@ -37,6 +37,10 @@ func CreateUser(c *fiber.Ctx) error {
 	log.Println("Clerk Info from Context:")
 	log.Printf("UserID: %s, Email: %s, Name: %s, Surname: %s\n", clerkUserID, clerkEmail, clerkName, clerkSurname)
 
+	if user.Address.Street != "" || user.Address.City != ""  {
+		log.Printf(", Address: %+v", user.Address)
+	}
+
 	// Assign Clerk-provided values to the user object
 	user.ID = clerkUserID
 	user.Email = clerkEmail
