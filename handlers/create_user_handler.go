@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"time"
 	"trocup-user/models"
 	"trocup-user/services"
@@ -17,29 +16,18 @@ func CreateUser(c *fiber.Ctx) error {
 
 	// Parse the request body into the User model
 	if err := c.BodyParser(&user); err != nil {
-		log.Println("Error parsing request body:", err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
 	}
 
-	// Print the parsed body from the request
-	log.Println("Parsed User from Body:")
-	log.Printf("Pseudo: %s, AvatarUrl: %s, ActivityStatus.Birthday: %v\n", user.Pseudo, user.AvatarUrl, user.ActivityStatus.Birthday)
 
-	// Get Clerk-provided data (name, surname, email) from the context
+	// Get Clerk-provided data (user id, name, surname, email) from the context
 	clerkUserID := c.Locals("clerkUserId").(string)
 	clerkEmail := c.Locals("clerkEmail").(string)
 	clerkName := c.Locals("clerkName").(string)
 	clerkSurname := c.Locals("clerkSurname").(string)
 
-	// Print the information from Clerk context
-	log.Println("Clerk Info from Context:")
-	log.Printf("UserID: %s, Email: %s, Name: %s, Surname: %s\n", clerkUserID, clerkEmail, clerkName, clerkSurname)
-
-	if user.Address.Street != "" || user.Address.City != ""  {
-		log.Printf(", Address: %+v", user.Address)
-	}
 
 	// Assign Clerk-provided values to the user object
 	user.ID = clerkUserID
@@ -54,14 +42,9 @@ func CreateUser(c *fiber.Ctx) error {
 	// Set LastConnected to the current time
 	user.ActivityStatus.LastConnected = primitive.NewDateTimeFromTime(time.Now())
 
-	// Print the final user object before creating the user in the database
-	log.Println("Final User Object:")
-	log.Printf("ID: %s, Name: %s, Email: %s, Pseudo: %s, LastConnected: %v\n", user.ID, user.Name, user.Email, user.Pseudo, user.ActivityStatus.LastConnected)
-
 	// Check if the user already exists (by email or pseudo)
 	err := services.CheckIfUserExists(c.Context(), user.Email, user.Pseudo)
 	if err != nil {
-		log.Println("User already exists with Email or Pseudo:", err)
 		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
 			"error": err.Error(),
 		})
@@ -70,14 +53,12 @@ func CreateUser(c *fiber.Ctx) error {
 	// Create the new user (pass the context from Fiber)
 	err = services.CreateUser(c.Context(), &user)
 	if err != nil {
-		log.Println("Failed to create user:", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to create user",
 		})
 	}
 
 	// Return success response
-	log.Println("User created successfully")
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"message": "User created successfully",
 	})
