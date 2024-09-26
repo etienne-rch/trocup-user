@@ -16,8 +16,8 @@ func TestUser(t *testing.T) {
 	address := models.Address{
 		Street:   "123 Main St",
 		City:     "Anytown",
-		Postcode: 12345,
-		Citycode: 123,
+		Postcode: "12345",
+		Citycode: "123",
 		GeoPoints: models.GeoPoints{
 			Type:        "Point",
 			Coordinates: []float64{1.0, 2.0},
