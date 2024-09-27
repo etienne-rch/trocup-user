@@ -5,19 +5,16 @@ import (
 	"trocup-user/services"
 
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func DeleteUser(c *fiber.Ctx) error {
-	id := c.Params("id")
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Invalid ID format"})
-	}
+	id := c.Params("id")  // L'ID de Clerk est récupéré sous forme de chaîne
 
-	if err := services.DeleteUser(objID); err != nil {
+	// Appel du service avec l'ID string
+	if err := services.DeleteUser(id); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.SendStatus(http.StatusNoContent)
 }
+

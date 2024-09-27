@@ -13,6 +13,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
+
+	"github.com/clerk/clerk-sdk-go/v2"
 )
 
 func main() {
@@ -32,6 +34,9 @@ func main() {
 
     // Initialize MongoDB
     config.InitMongo()
+
+    // Initialize Clerk
+    clerk.SetKey(os.Getenv("CLERK_SECRET_KEY"))
 
     // Set up routes
     routes.UserRoutes(app)

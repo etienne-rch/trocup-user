@@ -2,10 +2,8 @@ package services
 
 import (
 	"trocup-user/repository"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func DeleteUser(id primitive.ObjectID) error {
-	return repository.DeleteUser(id)
+func DeleteUser(id string) error {
+	return repository.DeleteUser(id)  // Appel au repository avec l'ID en tant que chaîne
 }

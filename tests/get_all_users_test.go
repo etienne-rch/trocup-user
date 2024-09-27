@@ -11,7 +11,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestGetUsers(t *testing.T) {
@@ -21,25 +20,23 @@ func TestGetUsers(t *testing.T) {
 
 	users := []models.User{
 		{
-			ID:          primitive.NewObjectID(),
+			ID:          "clerk_user_id_12345",
 			Version:     1,
 			Pseudo:      "testuser1",
 			Name:        "John",
 			Surname:     "Doe",
 			Email:       "john.doe1@example.com",
-			Password:    "password123",
 			Sexe:        "M",
 			PhoneNumber: "1234567890",
 			IsPremium:   false,
 		},
 		{
-			ID:          primitive.NewObjectID(),
+			ID:          "clerk_user_id_12345",
 			Version:     1,
 			Pseudo:      "testuser2",
 			Name:        "Jane",
 			Surname:     "Doe",
 			Email:       "jane.doe@example.com",
-			Password:    "password123",
 			Sexe:        "F",
 			PhoneNumber: "0987654321",
 			IsPremium:   true,

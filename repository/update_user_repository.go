@@ -6,10 +6,9 @@ import (
 	"trocup-user/models"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func UpdateUser(id primitive.ObjectID, user *models.User) (*models.User, error) {
+func UpdateUser(id string, user *models.User) (*models.User, error) {
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": user}
 
@@ -18,5 +17,5 @@ func UpdateUser(id primitive.ObjectID, user *models.User) (*models.User, error) 
 		return nil, err
 	}
 
-	return GetUserByID(id)
+	return GetUserByID(id)  // Utilisation de l'ID string pour la récupération de l'utilisateur mis à jour
 }
