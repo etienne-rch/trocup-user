@@ -6,11 +6,12 @@ import (
 	"trocup-user/models"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func GetUserByID(id primitive.ObjectID) (*models.User, error) {
+func GetUserByID(id string) (*models.User, error) {
 	var user models.User
+
+	// Recherche dans MongoDB avec le Clerk ID (qui est un string)
 	err := config.UserCollection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&user)
 	if err != nil {
 		return nil, err

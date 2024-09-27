@@ -5,17 +5,13 @@ import (
 	"trocup-user/services"
 
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetUserByID(c *fiber.Ctx) error {
-	id := c.Params("id")
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "Invalid ID format"})
-	}
+	id := c.Params("id")  // L'ID de Clerk est une chaîne de caractères
 
-	user, err := services.GetUserByID(objID)
+	// Appel du service avec l'ID string
+	user, err := services.GetUserByID(id)
 	if err != nil {
 		return c.Status(http.StatusNotFound).JSON(fiber.Map{"error": "User not found"})
 	}

@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"reflect"
 	"testing"
 	"time"
 	"trocup-user/models"
@@ -69,11 +70,11 @@ func TestUser(t *testing.T) {
 	if user.Address.City != address.City {
 		t.Errorf("expected City to be %s, got %s", address.City, user.Address.City)
 	}
-	if user.Address.Postcode != address.Postcode {
-		t.Errorf("expected Postcode to be %d, got %d", address.Postcode, user.Address.Postcode)
+	if user.ActivityStatus.LastConnected != activityStatus.LastConnected {
+		t.Errorf("expected LastConnected to be %v, got %v", activityStatus.LastConnected, user.ActivityStatus.LastConnected)
 	}
-	if user.Address.Citycode != address.Citycode {
-		t.Errorf("expected Citycode to be %d, got %d", address.Citycode, user.Address.Citycode)
+	if user.ActivityStatus.Birthday != activityStatus.Birthday {
+		t.Errorf("expected Birthday to be %v, got %v", activityStatus.Birthday, user.ActivityStatus.Birthday)
 	}
 	if user.Address.GeoPoints.Type != address.GeoPoints.Type {
 		t.Errorf("expected GeoPoints.Type to be %s, got %s", address.GeoPoints.Type, user.Address.GeoPoints.Type)
@@ -96,13 +97,13 @@ func TestUser(t *testing.T) {
 	}
 	if !user.BirthDate.Equal(now.AddDate(-30, 0, 0)) {
 		t.Errorf("expected BirthDate to be %v, got %v", now.AddDate(-30, 0, 0), user.BirthDate)
-	}
+	}	
 	if user.IsPremium != true {
 		t.Errorf("expected IsPremium to be true, got %v", user.IsPremium)
 	}
-	if len(user.FavoriteArticles) != 2 || user.FavoriteArticles[0] != "article1" || user.FavoriteArticles[1] != "article2" {
+	if !reflect.DeepEqual(user.FavoriteArticles, []string{"article1", "article2"}) {
 		t.Errorf("expected FavoriteArticles to be ['article1', 'article2'], got %v", user.FavoriteArticles)
-	}
+	}	
 	if len(user.Comments) != 2 || user.Comments[0] != "comment1" || user.Comments[1] != "comment2" {
 		t.Errorf("expected Comments to be ['comment1', 'comment2'], got %v", user.Comments)
 	}

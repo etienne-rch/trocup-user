@@ -22,7 +22,7 @@ func TestUpdateUser(t *testing.T) {
 
 	// Insérer un utilisateur pour le test
 	user := models.User{
-		ID:          "clerk_user_id_12345",
+		ID:          "clerk_user_id_12345", // Utilisation de l'ID Clerk
 		Version:     1,
 		Pseudo:      "testuser",
 		Name:        "John",

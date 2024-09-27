@@ -19,7 +19,7 @@ func TestDeleteUser(t *testing.T) {
 	app.Delete("/users/:id", handlers.DeleteUser)
 
 	user := models.User{
-		ID:          "clerk_user_id_12345",
+		ID:          "clerk_user_id_12345", // Utilisation d'un ID string
 		Version:     1,
 		Pseudo:      "testuser",
 		Name:        "John",
@@ -39,3 +39,4 @@ func TestDeleteUser(t *testing.T) {
 	// Nettoyage après chaque test
 	defer config.CleanUpTestDatabase("test_db")
 }
+
