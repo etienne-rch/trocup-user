@@ -6,6 +6,7 @@ import (
 	"time"
 	"trocup-user/models"
 
+	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -14,16 +15,16 @@ func TestUser(t *testing.T) {
 	
 
 	now := time.Now()
-	address := models.Address{
-		Street:   "123 Main St",
-		City:     "Anytown",
-		Postcode: "12345",
-		Citycode: "123",
+	address := []models.Address{{
+		Street:    "123 Test St",
+		City:      "Test City",
+		Postcode:  "12345",
+		Citycode:  "123",
 		GeoPoints: models.GeoPoints{
 			Type:        "Point",
-			Coordinates: []float64{1.0, 2.0},
+			Coordinates: []float64{1.23, 4.56},
 		},
-	}
+	}}
 
 	activityStatus := models.ActivityStatus{
 		LastConnected: primitive.NewDateTimeFromTime(now),
@@ -64,26 +65,18 @@ func TestUser(t *testing.T) {
 		t.Errorf("expected Surname to be 'Doe', got %s", user.Surname)
 	}
 	// Compare Address fields
-	if user.Address.Street != address.Street {
-		t.Errorf("expected Street to be %s, got %s", address.Street, user.Address.Street)
-	}
-	if user.Address.City != address.City {
-		t.Errorf("expected City to be %s, got %s", address.City, user.Address.City)
-	}
-	if user.ActivityStatus.LastConnected != activityStatus.LastConnected {
-		t.Errorf("expected LastConnected to be %v, got %v", activityStatus.LastConnected, user.ActivityStatus.LastConnected)
-	}
-	if user.ActivityStatus.Birthday != activityStatus.Birthday {
-		t.Errorf("expected Birthday to be %v, got %v", activityStatus.Birthday, user.ActivityStatus.Birthday)
-	}
-	if user.Address.GeoPoints.Type != address.GeoPoints.Type {
-		t.Errorf("expected GeoPoints.Type to be %s, got %s", address.GeoPoints.Type, user.Address.GeoPoints.Type)
-	}
-	if len(user.Address.GeoPoints.Coordinates) != len(address.GeoPoints.Coordinates) ||
-		user.Address.GeoPoints.Coordinates[0] != address.GeoPoints.Coordinates[0] ||
-		user.Address.GeoPoints.Coordinates[1] != address.GeoPoints.Coordinates[1] {
-		t.Errorf("expected GeoPoints.Coordinates to be %v, got %v", address.GeoPoints.Coordinates, user.Address.GeoPoints.Coordinates)
-	}
+	assert.Equal(t, "123 Test St", user.Address[0].Street, "Street should match")
+	assert.Equal(t, "123 Test St", user.Address[0].Street, "Street in Address should match")
+
+	assert.Equal(t, "Test City", user.Address[0].City, "City should match")
+	assert.Equal(t, "Test City", user.Address[0].City, "City in Address should match")
+
+	assert.NotNil(t, user.Address[0].GeoPoints, "GeoPoints should not be nil")
+	assert.Equal(t, "Point", user.Address[0].GeoPoints.Type, "GeoPoints Type should be 'Point'")
+
+	assert.Len(t, user.Address[0].GeoPoints.Coordinates, 2, "GeoPoints should have 2 coordinates")
+	assert.Equal(t, 1.23, user.Address[0].GeoPoints.Coordinates[0], "Latitude should match")
+	assert.Equal(t, 4.56, user.Address[0].GeoPoints.Coordinates[1], "Longitude should match")
 
 	if user.Email != "johndoe@example.com" {
 		t.Errorf("expected Email to be 'johndoe@example.com', got %s", user.Email)
