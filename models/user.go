@@ -38,7 +38,7 @@ type User struct {
 	Pseudo           string             `json:"pseudo" bson:"pseudo" validate:"required"`
 	Name             string             `json:"name,omitempty" bson:"name,omitempty" validate:"required"`
 	Surname          string             `json:"surname,omitempty" bson:"surname,omitempty" validate:"required"`
-	Address          Address            `json:"address,omitempty" bson:"address,omitempty"`
+	Address          []Address            `json:"address,omitempty" bson:"address,omitempty"`
 	Email            string             `json:"email" bson:"email,omitempty" validate:"required,email"`
 	Sexe             string             `json:"sexe,omitempty" bson:"sexe,omitempty" validate:"oneof=M F"`
 	PhoneNumber      string             `json:"phoneNumber,omitempty" bson:"phoneNumber,omitempty" validate:"omitempty,e164"`
