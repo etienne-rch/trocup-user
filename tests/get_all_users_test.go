@@ -32,7 +32,7 @@ func TestGetUsers(t *testing.T) {
 			IsPremium:   false,
 		},
 		{
-			ID:          "clerk_user_id_12345",
+			ID:          "clerk_user_id_123456",
 			Version:     1,
 			Pseudo:      "testuser2",
 			Name:        "Jane",
