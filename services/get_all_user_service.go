@@ -5,6 +5,6 @@ import (
 	"trocup-user/repository"
 )
 
-func GetUsers() ([]models.User, error) {
-	return repository.GetUsers()
+func GetUsers(skip, limit int64) ([]models.User, error) {
+	return repository.GetUsers(skip, limit)
 }
