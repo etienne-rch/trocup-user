@@ -8,18 +8,17 @@ import (
 )
 
 func UserRoutes(app *fiber.App) {
-	app.Get("/health", handlers.HealthCheck)
-
 	// Routes publiques : accessibles sans authentification
-	app.Get("/users/:id", handlers.GetUserByID)
+	public := app.Group("/api")
+	
+	public.Get("/health", handlers.HealthCheck)
+	public.Get("/users/:id", handlers.GetUserByID)
 
-	//app.Post("/register", handlers.Register)
-	//app.Post("/login", handlers.Login)
+	// Routes protégées : accessibles uniquement avec authentification
+	protected := app.Group("/api/protected", middleware.ClerkAuthMiddleware)
 
-	api := app.Group("/api", middleware.ClerkAuthMiddleware)
-
-	api.Post("/users", handlers.CreateUser)
-	api.Get("/users", handlers.GetUsers)
-	api.Put("/users/:id", handlers.UpdateUser)
-	api.Delete("/users/:id", handlers.DeleteUser)
+	protected.Post("/users", handlers.CreateUser)
+	protected.Get("/users", handlers.GetUsers)
+	protected.Put("/users/:id", handlers.UpdateUser)
+	protected.Delete("/users/:id", handlers.DeleteUser)
 }
