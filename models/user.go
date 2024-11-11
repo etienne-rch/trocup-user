@@ -48,8 +48,8 @@ type User struct {
 	AvatarUrl        string             `json:"avatarUrl,omitempty" bson:"avatarUrl,omitempty"`
 	IsPremium        bool               `json:"isPremium,omitempty" bson:"isPremium,omitempty"`
 	FavoriteArticles []string           `json:"favoriteArticles,omitempty" bson:"favoriteArticles,omitempty"`
-	Credit           int                `json:"credit,omitempty" bson:"credit,omitempty"`
+	Credit           float64            `json:"credit,omitempty" bson:"credit,omitempty"`
+	Balance          float64            `json:"balance,omitempty" bson:"balance,omitempty"`
 	Comments         []string           `json:"comments,omitempty" bson:"comments,omitempty"`
 	Articles         []string           `json:"articles,omitempty" bson:"articles,omitempty"`
-	Debit            []string           `json:"debit,omitempty" bson:"debit,omitempty"`
 }
