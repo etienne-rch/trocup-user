@@ -9,7 +9,7 @@ import (
 )
 
 // ClerkAuthMiddleware verifies the Authorization header and Clerk session
-func ClerkAuthMiddleware(c *fiber.Ctx) error {
+func ClerkAuthMiddleware(c *fiber.Ctx) error {	
 	// Extract the Authorization header from the request
 	authHeader := c.Get("Authorization")
 	if authHeader == "" {
