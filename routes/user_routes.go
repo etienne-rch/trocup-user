@@ -22,6 +22,8 @@ func UserRoutes(app *fiber.App) {
 	protected.Put("/users/:id", handlers.UpdateUser)
 	// Patch pour updater credit et articles lors de la création d'un article
 	protected.Patch("/users/:id", handlers.UpdateUserArticle)
+	// Patch pour les transactions
+	protected.Patch("/users/transactions", handlers.UpdateUsersTransaction)
 	protected.Delete("/users/:id", handlers.DeleteUser)
 
 	// Routes accessibles uniquement aux utilisateurs connectés et admin : /api/protected/admin

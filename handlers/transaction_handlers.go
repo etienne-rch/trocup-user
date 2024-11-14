@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"net/http"
-	"os"
 	"trocup-user/repository"
 
 	"github.com/gofiber/fiber/v2"
@@ -11,10 +9,10 @@ import (
 type TransactionPayload struct {
 	UserA      string   `json:"userA"`
 	UserB      string   `json:"userB"`
-	ArticleA   string   `json:"articleA"`  // Only for 1to1
-	ArticleB   string   `json:"articleB,omitempty"`   
-	ArticlePriceA float64 `json:"articleAPrice"` // Only for 1to1
-	ArticlePriceB float64 `json:"articleBPrice,omitempty"` 
+	ArticleA   string   `json:"articleA,omitempty"`  // Only for 1to1
+	ArticleB   string   `json:"articleB"`   
+	ArticlePriceA float64 `json:"articlePriceA,omitempty"` // Only for 1to1
+	ArticlePriceB float64 `json:"articlePriceB"` 
 }
 
 func UpdateUsersTransaction(c *fiber.Ctx) error {
@@ -33,14 +31,6 @@ func UpdateUsersTransaction(c *fiber.Ctx) error {
 		})
 	}
 
-	// Perform a health check to the transaction micro-service
-	transactionServiceURL := os.Getenv("TRANSACTION_SERVICE_URL")
-	resp, err := http.Get(transactionServiceURL + "api/health")
-	if err != nil || resp.StatusCode != http.StatusOK {
-		return c.Status(fiber.StatusServiceUnavailable).JSON(fiber.Map{
-			"error": "Transaction micro-service is unavailable",
-		})
-	}
 
 	// Check if it's a 1to1 transaction
 	isOneToOne := payload.ArticleB != "" && payload.ArticlePriceB > 0
@@ -62,4 +52,4 @@ func UpdateUsersTransaction(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(updatedUser)
-} 
+} 	
