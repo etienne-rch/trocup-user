@@ -46,7 +46,8 @@ func TestUser(t *testing.T) {
 		FavoriteArticles: []string{"article1", "article2"},
 		Comments:         []string{"comment1", "comment2"},
 		Articles:         []string{"article1", "article2"},
-		Debit:            []string{"debit1", "debit2"},
+		Credit:           100,
+		Balance:          100,
 	}
 
 	if user.ID != id {
@@ -103,7 +104,10 @@ func TestUser(t *testing.T) {
 	if len(user.Articles) != 2 || user.Articles[0] != "article1" || user.Articles[1] != "article2" {
 		t.Errorf("expected Articles to be ['article1', 'article2'], got %v", user.Articles)
 	}
-	if len(user.Debit) != 2 || user.Debit[0] != "debit1" || user.Debit[1] != "debit2" {
-		t.Errorf("expected Debit to be ['debit1', 'debit2'], got %v", user.Debit)
+	if user.Credit != 100 {
+		t.Errorf("expected Credit to be 100, got %f", user.Credit)
+	}
+	if user.Balance != 100 {
+		t.Errorf("expected Balance to be 100, got %f", user.Balance)
 	}
 }
