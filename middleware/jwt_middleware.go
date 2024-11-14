@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"encoding/json"
 	"strings"
 
 	"github.com/clerk/clerk-sdk-go/v2/jwt"
@@ -9,11 +10,10 @@ import (
 )
 
 // ClerkAuthMiddleware verifies the Authorization header and Clerk session
-func ClerkAuthMiddleware(c *fiber.Ctx) error {	
+func ClerkAuthMiddleware(c *fiber.Ctx) error {
 	// Extract the Authorization header from the request
 	authHeader := c.Get("Authorization")
 	if authHeader == "" {
-		
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Missing Authorization header",
 		})
@@ -53,13 +53,43 @@ func ClerkAuthMiddleware(c *fiber.Ctx) error {
 		lastName = *usr.LastName
 	}
 
-	
-	// Store Clerk user data in Fiber's context for future handlers
+	// Decode PrivateMetadata
+	var privateMetadata map[string]interface{}
+	if err := json.Unmarshal(usr.PrivateMetadata, &privateMetadata); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to decode private metadata",
+		})
+	}
+
+	// Store Clerk user data and metadata in Fiber's context
 	c.Locals("clerkUserId", claims.Subject)
 	c.Locals("clerkEmail", usr.EmailAddresses[0].EmailAddress)
 	c.Locals("clerkName", firstName)
 	c.Locals("clerkSurname", lastName)
+	c.Locals("clerkPrivateMetadata", privateMetadata) // Store private metadata here
 
 	// Continue to the next handler in the chain
+	return c.Next()
+}
+
+// ClerkAdminMiddleware checks if the user has an "admin" role
+func ClerkAdminMiddleware(c *fiber.Ctx) error {
+	// Retrieve private metadata from Fiber's context (set in ClerkAuthMiddleware)
+	privateMetadata, ok := c.Locals("clerkPrivateMetadata").(map[string]interface{})
+	if !ok {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "Unable to access private metadata",
+		})
+	}
+
+	// Check if "role" exists and if it is "admin"
+	role, ok := privateMetadata["role"].(string)
+	if !ok || role != "admin" {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "Access denied: Admins only",
+		})
+	}
+
+	// Continue to the next handler if the user is an admin
 	return c.Next()
 }
