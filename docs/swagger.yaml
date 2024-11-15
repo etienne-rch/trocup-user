@@ -1,0 +1,156 @@
+definitions:
+  models.ActivityStatusSwagger:
+    properties:
+      birthday:
+        description: Utilise time.Time pour Swagger
+        type: string
+      lastConnected:
+        description: Utilise time.Time pour Swagger
+        type: string
+    type: object
+  models.Address:
+    properties:
+      city:
+        type: string
+      citycode:
+        type: string
+      extra:
+        type: string
+      floor:
+        type: integer
+      geopoints:
+        $ref: '#/definitions/models.GeoPoints'
+      label:
+        type: string
+      postcode:
+        type: string
+      street:
+        type: string
+    type: object
+  models.BankInfo:
+    properties:
+      bic:
+        type: string
+      iban:
+        type: string
+    type: object
+  models.GeoPoints:
+    properties:
+      coordinates:
+        items:
+          type: number
+        type: array
+      type:
+        type: string
+    type: object
+  models.UserSwagger:
+    description: Modèle d'un utilisateur (utilisé uniquement pour Swagger)
+    properties:
+      activityStatus:
+        allOf:
+        - $ref: '#/definitions/models.ActivityStatusSwagger'
+        description: Utilise ActivityStatusSwagger
+      address:
+        items:
+          $ref: '#/definitions/models.Address'
+        type: array
+      articles:
+        items:
+          type: string
+        type: array
+      avatarUrl:
+        type: string
+      balance:
+        type: number
+      bankInfo:
+        $ref: '#/definitions/models.BankInfo'
+      birthDate:
+        type: string
+      comments:
+        items:
+          type: string
+        type: array
+      credit:
+        type: number
+      email:
+        type: string
+      favoriteArticles:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      isPremium:
+        type: boolean
+      name:
+        type: string
+      phoneNumber:
+        type: string
+      pseudo:
+        type: string
+      sexe:
+        enum:
+        - M
+        - F
+        type: string
+      surname:
+        type: string
+      version:
+        type: integer
+    required:
+    - email
+    - name
+    - pseudo
+    - surname
+    type: object
+info:
+  contact: {}
+  description: API pour gérer les utilisateurs sur Trocup
+  title: Trocup User API
+  version: "1.0"
+paths:
+  /api/protected/users:
+    post:
+      consumes:
+      - application/json
+      description: Ajoute un nouvel utilisateur dans la base de données.
+      parameters:
+      - description: Données de l'utilisateur à créer
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserSwagger'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Utilisateur créé avec succès
+          schema:
+            $ref: '#/definitions/models.UserSwagger'
+        "400":
+          description: Requête invalide, échec de l'analyse du corps de la requête
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Utilisateur déjà existant
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Erreur lors de la création de l'utilisateur
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Créer un nouvel utilisateur
+      tags:
+      - Utilisateurs
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

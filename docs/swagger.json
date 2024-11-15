@@ -1,0 +1,237 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API pour gérer les utilisateurs sur Trocup",
+        "title": "Trocup User API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/protected/users": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Ajoute un nouvel utilisateur dans la base de données.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Utilisateurs"
+                ],
+                "summary": "Créer un nouvel utilisateur",
+                "parameters": [
+                    {
+                        "description": "Données de l'utilisateur à créer",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserSwagger"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/models.UserSwagger"
+                        }
+                    },
+                    "400": {
+                        "description": "Requête invalide, échec de l'analyse du corps de la requête",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "409": {
+                        "description": "Utilisateur déjà existant",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur lors de la création de l'utilisateur",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.ActivityStatusSwagger": {
+            "type": "object",
+            "properties": {
+                "birthday": {
+                    "description": "Utilise time.Time pour Swagger",
+                    "type": "string"
+                },
+                "lastConnected": {
+                    "description": "Utilise time.Time pour Swagger",
+                    "type": "string"
+                }
+            }
+        },
+        "models.Address": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "citycode": {
+                    "type": "string"
+                },
+                "extra": {
+                    "type": "string"
+                },
+                "floor": {
+                    "type": "integer"
+                },
+                "geopoints": {
+                    "$ref": "#/definitions/models.GeoPoints"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "postcode": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.BankInfo": {
+            "type": "object",
+            "properties": {
+                "bic": {
+                    "type": "string"
+                },
+                "iban": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.GeoPoints": {
+            "type": "object",
+            "properties": {
+                "coordinates": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserSwagger": {
+            "description": "Modèle d'un utilisateur (utilisé uniquement pour Swagger)",
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "pseudo",
+                "surname"
+            ],
+            "properties": {
+                "activityStatus": {
+                    "description": "Utilise ActivityStatusSwagger",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.ActivityStatusSwagger"
+                        }
+                    ]
+                },
+                "address": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Address"
+                    }
+                },
+                "articles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "avatarUrl": {
+                    "type": "string"
+                },
+                "balance": {
+                    "type": "number"
+                },
+                "bankInfo": {
+                    "$ref": "#/definitions/models.BankInfo"
+                },
+                "birthDate": {
+                    "type": "string"
+                },
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "credit": {
+                    "type": "number"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "favoriteArticles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "isPremium": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                },
+                "pseudo": {
+                    "type": "string"
+                },
+                "sexe": {
+                    "type": "string",
+                    "enum": [
+                        "M",
+                        "F"
+                    ]
+                },
+                "surname": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
