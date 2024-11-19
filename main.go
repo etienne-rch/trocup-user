@@ -34,10 +34,7 @@ func main() {
 	
 	// Get allowed origins from environment variable
 	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
-	if allowedOrigins == "" {
-		// Default origins for development
-		allowedOrigins = "http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173"
-	}
+	
 
 	// CORS activation for all routes
 	app.Use(cors.New(cors.Config{

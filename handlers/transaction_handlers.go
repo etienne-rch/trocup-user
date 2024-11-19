@@ -3,7 +3,7 @@ package handlers
 import (
 	"trocup-user/repository"
 	"trocup-user/types"
-
+	"log"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -16,40 +16,62 @@ type TransactionPayload struct {
 	ArticlePriceB float64 `json:"articlePriceB"` 
 }
 
+
 func UpdateUsersTransaction(c *fiber.Ctx) error {
 	var payload TransactionPayload
+
 	if err := c.BodyParser(&payload); err != nil {
+		log.Printf("Error parsing payload: %v", err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid payload",
+			"details": err.Error(),
 		})
 	}
 
-	// Validate required fields
+	log.Printf("Received payload: %+v", payload)
+	log.Printf("Request Origin: %s", c.Get("Origin"))
+
+	// Common validation for both types of transactions
 	if payload.UserA == "" || payload.UserB == "" || 
-	   payload.ArticleA == "" || payload.ArticlePriceA <= 0 {
+	   payload.ArticleB == "" || payload.ArticlePriceB <= 0 {
+		log.Printf("Missing required fields - UserA: %s, UserB: %s, ArticleB: %s, ArticlePriceB: %f",
+			payload.UserA, payload.UserB, payload.ArticleB, payload.ArticlePriceB)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Missing required fields",
+			"details": "userA, userB, articleB, and articlePriceB are required",
 		})
 	}
 
-
-	// Check if it's a 1to1 transaction
-	isOneToOne := payload.ArticleB != "" && payload.ArticlePriceB > 0
-
+	// Determine transaction type and validate
+	isOneToOne := payload.ArticleA != "" || payload.ArticlePriceA > 0
 	var articles []types.ArticleOwnership
+
+	log.Printf("isOneToOne: %t", isOneToOne)
+
 	if isOneToOne {
-		articles = []types.ArticleOwnership{
-			{ArticleID: payload.ArticleA, OwnerID: payload.UserA, Price: payload.ArticlePriceA},
-			{ArticleID: payload.ArticleB, OwnerID: payload.UserB, Price: payload.ArticlePriceB},
+		if payload.ArticleA == "" || payload.ArticlePriceA <= 0 {
+			log.Printf("Incomplete 1-to-1 transaction data - ArticleA: %s, ArticlePriceA: %f",
+				payload.ArticleA, payload.ArticlePriceA)
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Invalid 1-to-1 transaction",
+				"details": "Both articleA and articlePriceA must be provided for 1-to-1 transactions",
+			})
 		}
-	} else {
 		articles = []types.ArticleOwnership{
-			{ArticleID: payload.ArticleB, OwnerID: payload.UserB, Price: payload.ArticlePriceB},
+			{ArticleID: payload.ArticleA, UserID: payload.UserA, Price: payload.ArticlePriceA},
+			{ArticleID: payload.ArticleB, UserID: payload.UserB, Price: payload.ArticlePriceB},
+		}
+
+	} else {
+		log.Printf("🔥 1-to-M transaction - in handler")
+
+		articles = []types.ArticleOwnership{
+			{ArticleID: "", UserID: payload.UserA, Price: 0},
+			{ArticleID: payload.ArticleB, UserID: payload.UserB, Price: payload.ArticlePriceB},
 		}
 	}
 
 	updatedUser, err := repository.UpdateUsersTransaction(articles, isOneToOne)
-
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),

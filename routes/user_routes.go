@@ -2,6 +2,7 @@ package routes
 
 import (
 	"fmt"
+	"log"
 	"trocup-user/handlers"
 	"trocup-user/middleware"
 
@@ -9,6 +10,12 @@ import (
 )
 
 func UserRoutes(app *fiber.App) {
+	// Add logging middleware for all requests
+	app.Use(func(c *fiber.Ctx) error {
+		log.Printf("Request received: %s %s", c.Method(), c.Path())
+		return c.Next()
+	})
+
 	// Routes publiques : accessibles sans authentification
 	public := app.Group("/api")
 
@@ -20,10 +27,8 @@ func UserRoutes(app *fiber.App) {
 
 	protected.Post("/users", handlers.CreateUser)
 	protected.Put("/users/:id", handlers.UpdateUser)
-	// Patch pour updater credit et articles lors de la création d'un article
-	protected.Patch("/users/:id", handlers.UpdateUserArticle)
-	// Patch pour les transactions
 	protected.Patch("/users/transactions", handlers.UpdateUsersTransaction)
+	protected.Patch("/users/:id", handlers.UpdateUserArticle)
 	protected.Delete("/users/:id", handlers.DeleteUser)
 
 	// Routes accessibles uniquement aux utilisateurs connectés et admin : /api/protected/admin

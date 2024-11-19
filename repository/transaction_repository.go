@@ -5,63 +5,101 @@ import (
 	"trocup-user/config"
 	"trocup-user/models"
 	"trocup-user/types"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"fmt"
+	"log"
 )
 
 func UpdateUsersTransaction(articles []types.ArticleOwnership, isOneToOne bool) (map[string]*models.User, error) {
-	updatedUsers := make(map[string]*models.User)
+
 	
-	if isOneToOne {
-		// Handle 1-to-1 transaction
-		article1 := articles[0]
-		article2 := articles[1]
-		
-		// Update UserA (gives article1)
-		updateA := bson.M{
-			"$inc":  bson.M{"credit": -article1.Price},
-			"$pull": bson.M{"articles": article1.ArticleID},
-		}
-		
-		// Update UserB (gives article2)
-		updateB := bson.M{
-			"$inc":  bson.M{"credit": -article2.Price},
-			"$pull": bson.M{"articles": article2.ArticleID},
+	log.Printf("Articles: %+v", articles)
+	log.Printf("IsOneToOne: %t", isOneToOne)
+
+	userAparam := articles[0]
+	userBparam := articles[1]
+
+	// Get users data from DB
+	userA, err := GetUserByID(userAparam.UserID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get userA: %v", err)
+	}
+	
+	_, err = GetUserByID(userBparam.UserID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get userB: %v", err)
+	}
+
+	if !isOneToOne {
+		// For 1-to-M, check userA's balance and premium status
+
+		// Calculate minimum allowed balance
+		minAllowedBalance := float64(0)
+		if userA.IsPremium {
+			minAllowedBalance = -userA.Credit
+		} else {
+			minAllowedBalance = 0
 		}
 
-		if err := executeUpdates(article1.OwnerID, article2.OwnerID, updateA, updateB); err != nil {
+		// Check if transaction would exceed minimum allowed balance
+		if (userA.Balance - userBparam.Price) < minAllowedBalance {
+			return nil, fmt.Errorf("❌ Insufficient balance: %.2f (min allowed: %.2f)", userA.Balance, minAllowedBalance)
+		}
+	}
+
+	// Proceed with updates if validation passed
+	if isOneToOne {
+		
+		updateA := bson.M{
+			"$inc":  bson.M{"credit": -userAparam.Price},
+			"$pull": bson.M{"articles": userAparam.ArticleID},
+		}
+		
+		updateB := bson.M{
+			"$inc":  bson.M{"credit": -userBparam.Price},
+			"$pull": bson.M{"articles": userBparam.ArticleID},
+		}
+
+		if err := executeUpdates(userAparam.UserID, userBparam.UserID, updateA, updateB); err != nil {
 			return nil, err
 		}
 	} else {
-		// Handle 1-to-M transaction
-		article := articles[0]
+		// 1-to-M transaction
 		
-		// Update UserA (pays with balance)
 		updateA := bson.M{
-			"$inc": bson.M{"balance": -article.Price},
+			"$inc": bson.M{"balance": -userBparam.Price},
 		}
 		
-		// Update UserB (gives article and loses credit)
 		updateB := bson.M{
-			"$inc": bson.M{"credit": -article.Price},
-			"$pull": bson.M{"articles": article.ArticleID},
+			"$inc": bson.M{
+				"credit": -userBparam.Price,
+				"balance": userBparam.Price,
+			},
+			"$pull": bson.M{"articles": userBparam.ArticleID},
 		}
 
-		if err := executeUpdates(article.OwnerID, "", updateA, updateB); err != nil {
+		if err := executeUpdates(userAparam.UserID, userBparam.UserID, updateA, updateB); err != nil {
 			return nil, err
 		}
 	}
 
-	// Get updated users
-	for _, article := range articles {
-		user, err := GetUserByID(article.OwnerID)
-		if err != nil {
-			return nil, err
-		}
-		updatedUsers[article.OwnerID] = user
+	// Fetch both updated users after the transaction
+	updatedUserA, err := GetUserByID(userAparam.UserID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get updated userA: %v", err)
 	}
 
+	updatedUserB, err := GetUserByID(userBparam.UserID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get updated userB: %v", err)
+	}
+
+	// Return both updated users
+	updatedUsers := map[string]*models.User{
+		userAparam.UserID: updatedUserA,
+		userBparam.UserID: updatedUserB,
+	}
 	return updatedUsers, nil
 }
 
