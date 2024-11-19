@@ -17,5 +17,5 @@ func UpdateUser(id string, user *models.User) (*models.User, error) {
 		return nil, err
 	}
 
-	return GetUserByID(id)  // Utilisation de l'ID string pour la récupération de l'utilisateur mis à jour
+	return GetUserByID(id)
 }

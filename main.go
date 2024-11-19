@@ -31,11 +31,23 @@ func main() {
 		AppName: "Trocup User Microservice",
 	})
 
+	
+	// Get allowed origins from environment variable
+	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+	if allowedOrigins == "" {
+		// Default origins for development
+		allowedOrigins = "http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173"
+	}
+
 	// CORS activation for all routes
-    app.Use(cors.New(cors.Config{
-        AllowOrigins: "*", // Enable access from all domains
-        AllowMethods: "GET,POST,HEAD,PUT,DELETE,OPTIONS", // Allowed HTTP methods
-    }))
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     allowedOrigins,
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		ExposeHeaders:    "Content-Length",
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
 
     // Initialize MongoDB
     config.InitMongo()

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"trocup-user/repository"
+	"trocup-user/types"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -35,15 +36,19 @@ func UpdateUsersTransaction(c *fiber.Ctx) error {
 	// Check if it's a 1to1 transaction
 	isOneToOne := payload.ArticleB != "" && payload.ArticlePriceB > 0
 
-	updatedUser, err := repository.UpdateUsersTransaction(
-		payload.UserA, 
-		payload.UserB,
-		payload.ArticleA,
-		payload.ArticleB,
-		payload.ArticlePriceA,
-		payload.ArticlePriceB,
-		isOneToOne,
-	)
+	var articles []types.ArticleOwnership
+	if isOneToOne {
+		articles = []types.ArticleOwnership{
+			{ArticleID: payload.ArticleA, OwnerID: payload.UserA, Price: payload.ArticlePriceA},
+			{ArticleID: payload.ArticleB, OwnerID: payload.UserB, Price: payload.ArticlePriceB},
+		}
+	} else {
+		articles = []types.ArticleOwnership{
+			{ArticleID: payload.ArticleB, OwnerID: payload.UserB, Price: payload.ArticlePriceB},
+		}
+	}
+
+	updatedUser, err := repository.UpdateUsersTransaction(articles, isOneToOne)
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

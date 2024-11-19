@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"time"
 	"trocup-user/models"
 	"trocup-user/services"
@@ -35,6 +36,9 @@ func CreateUser(c *fiber.Ctx) error {
 	user.Name = clerkName
 	user.Surname = clerkSurname
 	user.IsPremium = false // Default value for isPremium
+
+	// Log the request body
+	fmt.Printf("Request Body: %+v\n", user)
 
 	// Set Birthday to the current time
 	user.ActivityStatus.Birthday = primitive.NewDateTimeFromTime(time.Now())
