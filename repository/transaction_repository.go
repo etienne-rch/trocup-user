@@ -37,13 +37,13 @@ func UpdateUsersTransaction(articles []types.ArticleOwnership, isOneToOne bool) 
 		// Calculate minimum allowed balance
 		minAllowedBalance := float64(0)
 		if userA.IsPremium {
-			minAllowedBalance = -userA.Credit
+			minAllowedBalance = userA.Credit + userA.Balance
 		} else {
-			minAllowedBalance = 0
+			minAllowedBalance = userA.Balance
 		}
 
 		// Check if transaction would exceed minimum allowed balance
-		if (userA.Balance - userBparam.Price) < minAllowedBalance {
+		if userBparam.Price > minAllowedBalance {
 			log.Printf("❌ Insufficient balance: %.2f (min allowed: %.2f)", userA.Balance, minAllowedBalance)
 			return nil, fmt.Errorf("❌ Insufficient balance: %.2f (min allowed: %.2f)", userA.Balance, minAllowedBalance)
 		}
