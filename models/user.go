@@ -33,23 +33,23 @@ type BankInfo struct {
 }
 
 type User struct {
-	ID               string             `json:"id,omitempty" bson:"_id,omitempty"` // Clerk's user ID
-	Version          int                `json:"version,omitempty" bson:"version,omitempty"`
-	Pseudo           string             `json:"pseudo" bson:"pseudo" validate:"required"`
-	Name             string             `json:"name,omitempty" bson:"name,omitempty" validate:"required"`
-	Surname          string             `json:"surname,omitempty" bson:"surname,omitempty" validate:"required"`
-	Addresses        []Address          `json:"addresses,omitempty" bson:"addresses,omitempty"`
-	Email            string             `json:"email" bson:"email,omitempty" validate:"required,email"`
-	Sexe             string             `json:"sexe,omitempty" bson:"sexe,omitempty" validate:"oneof=M F"`
-	PhoneNumber      string             `json:"phoneNumber,omitempty" bson:"phoneNumber,omitempty" validate:"omitempty,e164"`
-	ActivityStatus   ActivityStatus     `json:"activityStatus,omitempty" bson:"activityStatus,omitempty"`
-	BirthDate        time.Time          `json:"birthDate,omitempty" bson:"birthDate,omitempty"`
-	BankInfo         *BankInfo          `json:"bankInfo,omitempty" bson:"bankInfo,omitempty"`
-	AvatarUrl        string             `json:"avatarUrl,omitempty" bson:"avatarUrl,omitempty"`
-	IsPremium        bool               `json:"isPremium,omitempty" bson:"isPremium,omitempty"`
-	FavoriteArticles []string           `json:"favoriteArticles,omitempty" bson:"favoriteArticles,omitempty"`
-	Credit           float64            `json:"credit,omitempty" bson:"credit,omitempty"`
-	Balance          float64            `json:"balance,omitempty" bson:"balance,omitempty"`
-	Comments         []string           `json:"comments,omitempty" bson:"comments,omitempty"`
-	Articles         []string           `json:"articles,omitempty" bson:"articles,omitempty"`
+	ID               string         `json:"id,omitempty" bson:"_id,omitempty"` // Clerk's user ID
+	Version          int            `json:"version,omitempty" bson:"version,omitempty"`
+	Pseudo           string         `json:"pseudo" bson:"pseudo" validate:"required"`
+	Name             string         `json:"name,omitempty" bson:"name,omitempty" validate:"required"`
+	Surname          string         `json:"surname,omitempty" bson:"surname,omitempty" validate:"required"`
+	Addresses        []Address      `json:"addresses,omitempty" bson:"addresses,omitempty"`
+	Email            string         `json:"email" bson:"email,omitempty" validate:"required,email"`
+	Sexe             string         `json:"sexe,omitempty" bson:"sexe,omitempty" validate:"oneof=M F"`
+	PhoneNumber      string         `json:"phoneNumber,omitempty" bson:"phoneNumber,omitempty" validate:"omitempty,e164"`
+	ActivityStatus   ActivityStatus `json:"activityStatus,omitempty" bson:"activityStatus,omitempty"`
+	BirthDate        time.Time      `json:"birthDate,omitempty" bson:"birthDate,omitempty"`
+	BankInfo         *BankInfo      `json:"bankInfo,omitempty" bson:"bankInfo,omitempty"`
+	AvatarUrl        string         `json:"avatarUrl,omitempty" bson:"avatarUrl,omitempty"`
+	IsPremium        bool           `json:"isPremium,omitempty" bson:"isPremium"`
+	FavoriteArticles []string       `json:"favoriteArticles,omitempty" bson:"favoriteArticles,omitempty"`
+	Credit           float64        `json:"credit,omitempty" bson:"credit"`
+	Balance          float64        `json:"balance,omitempty" bson:"balance"`
+	Comments         []string       `json:"comments,omitempty" bson:"comments,omitempty"`
+	Articles         []string       `json:"articles,omitempty" bson:"articles,omitempty"`
 }
