@@ -1,21 +1,21 @@
 package handlers
 
 import (
+	"log"
 	"trocup-user/repository"
 	"trocup-user/types"
-	"log"
+
 	"github.com/gofiber/fiber/v2"
 )
 
 type TransactionPayload struct {
-	UserA      string   `json:"userA"`
-	UserB      string   `json:"userB"`
-	ArticleA   string   `json:"articleA,omitempty"`  // Only for 1to1
-	ArticleB   string   `json:"articleB"`   
+	UserA         string  `json:"userA"`
+	UserB         string  `json:"userB"`
+	ArticleA      string  `json:"articleA,omitempty"` // Only for 1to1
+	ArticleB      string  `json:"articleB"`
 	ArticlePriceA float64 `json:"articlePriceA,omitempty"` // Only for 1to1
-	ArticlePriceB float64 `json:"articlePriceB"` 
+	ArticlePriceB float64 `json:"articlePriceB"`
 }
-
 
 func UpdateUsersTransaction(c *fiber.Ctx) error {
 	var payload TransactionPayload
@@ -23,7 +23,7 @@ func UpdateUsersTransaction(c *fiber.Ctx) error {
 	if err := c.BodyParser(&payload); err != nil {
 		log.Printf("Error parsing payload: %v", err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid payload",
+			"error":   "Invalid payload",
 			"details": err.Error(),
 		})
 	}
@@ -32,12 +32,12 @@ func UpdateUsersTransaction(c *fiber.Ctx) error {
 	log.Printf("Request Origin: %s", c.Get("Origin"))
 
 	// Common validation for both types of transactions
-	if payload.UserA == "" || payload.UserB == "" || 
-	   payload.ArticleB == "" || payload.ArticlePriceB <= 0 {
+	if payload.UserA == "" || payload.UserB == "" ||
+		payload.ArticleB == "" || payload.ArticlePriceB <= 0 {
 		log.Printf("Missing required fields - UserA: %s, UserB: %s, ArticleB: %s, ArticlePriceB: %f",
 			payload.UserA, payload.UserB, payload.ArticleB, payload.ArticlePriceB)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Missing required fields",
+			"error":   "Missing required fields",
 			"details": "userA, userB, articleB, and articlePriceB are required",
 		})
 	}
@@ -53,7 +53,7 @@ func UpdateUsersTransaction(c *fiber.Ctx) error {
 			log.Printf("Incomplete 1-to-1 transaction data - ArticleA: %s, ArticlePriceA: %f",
 				payload.ArticleA, payload.ArticlePriceA)
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"error": "Invalid 1-to-1 transaction",
+				"error":   "Invalid 1-to-1 transaction",
 				"details": "Both articleA and articlePriceA must be provided for 1-to-1 transactions",
 			})
 		}
@@ -71,12 +71,12 @@ func UpdateUsersTransaction(c *fiber.Ctx) error {
 		}
 	}
 
-	updatedUser, err := repository.UpdateUsersTransaction(articles, isOneToOne)
+	updatedUsers, err := repository.UpdateUsersTransaction(articles, isOneToOne)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(updatedUser)
-} 	
+	return c.Status(fiber.StatusOK).JSON(updatedUsers)
+}

@@ -2,18 +2,18 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"trocup-user/config"
 	"trocup-user/models"
 	"trocup-user/types"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"fmt"
-	"log"
 )
 
 func UpdateUsersTransaction(articles []types.ArticleOwnership, isOneToOne bool) (map[string]*models.User, error) {
 
-	
 	log.Printf("Articles: %+v", articles)
 	log.Printf("IsOneToOne: %t", isOneToOne)
 
@@ -25,7 +25,7 @@ func UpdateUsersTransaction(articles []types.ArticleOwnership, isOneToOne bool) 
 	if err != nil {
 		return nil, fmt.Errorf("failed to get userA: %v", err)
 	}
-	
+
 	_, err = GetUserByID(userBparam.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get userB: %v", err)
@@ -44,18 +44,19 @@ func UpdateUsersTransaction(articles []types.ArticleOwnership, isOneToOne bool) 
 
 		// Check if transaction would exceed minimum allowed balance
 		if (userA.Balance - userBparam.Price) < minAllowedBalance {
+			log.Printf("❌ Insufficient balance: %.2f (min allowed: %.2f)", userA.Balance, minAllowedBalance)
 			return nil, fmt.Errorf("❌ Insufficient balance: %.2f (min allowed: %.2f)", userA.Balance, minAllowedBalance)
 		}
 	}
 
 	// Proceed with updates if validation passed
 	if isOneToOne {
-		
+
 		updateA := bson.M{
 			"$inc":  bson.M{"credit": -userAparam.Price},
 			"$pull": bson.M{"articles": userAparam.ArticleID},
 		}
-		
+
 		updateB := bson.M{
 			"$inc":  bson.M{"credit": -userBparam.Price},
 			"$pull": bson.M{"articles": userBparam.ArticleID},
@@ -66,14 +67,14 @@ func UpdateUsersTransaction(articles []types.ArticleOwnership, isOneToOne bool) 
 		}
 	} else {
 		// 1-to-M transaction
-		
+
 		updateA := bson.M{
 			"$inc": bson.M{"balance": -userBparam.Price},
 		}
-		
+
 		updateB := bson.M{
 			"$inc": bson.M{
-				"credit": -userBparam.Price,
+				"credit":  -userBparam.Price,
 				"balance": userBparam.Price,
 			},
 			"$pull": bson.M{"articles": userBparam.ArticleID},
@@ -125,4 +126,4 @@ func executeUpdates(userA, userB string, updateA, updateB bson.M) error {
 	})
 
 	return err
-} 
+}
