@@ -1,0 +1,266 @@
+openapi: 3.0.0
+info:
+  title: Trocup User API
+  description: API pour gérer les utilisateurs sur Trocup
+  version: 1.0.0
+servers:
+  - url: "{baseUrl}"
+    description: URL de base pour différents environnements
+    variables:
+      baseUrl:
+        default: http://localhost:5001
+        description: URL par défaut pour le serveur de développement local
+
+paths:
+  /health:
+    get:
+      summary: Vérification de l'état du service
+      description: Vérifie si le service est opérationnel.
+      responses:
+        '200':
+          description: Le service est opérationnel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Service is up and running!
+
+  /api/users:
+    get:
+      summary: Récupérer tous les utilisateurs
+      description: Renvoie une liste de tous les utilisateurs.
+      security:
+        - BearerAuth: []  # Nécessite le JWT
+      responses:
+        '200':
+          description: Liste des utilisateurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+    post:
+      summary: Créer un nouvel utilisateur
+      description: Ajoute un nouvel utilisateur dans la base de données.
+      security:
+        - BearerAuth: []  # Nécessite le JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /api/users/{id}:
+    get:
+      summary: Récupérer un utilisateur par ID
+      description: Renvoie un utilisateur spécifique par son ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de l'utilisateur à récupérer
+          schema:
+            type: string
+      security:
+        - BearerAuth: []  # Nécessite le JWT
+      responses:
+        '200':
+          description: Utilisateur trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Utilisateur non trouvé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
+
+    put:
+      summary: Mettre à jour un utilisateur
+      description: Modifie les informations d'un utilisateur existant.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de l'utilisateur à mettre à jour
+          schema:
+            type: string
+      security:
+        - BearerAuth: []  # Nécessite le JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '200':
+          description: Utilisateur mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+    delete:
+      summary: Supprimer un utilisateur
+      description: Supprime un utilisateur par son ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de l'utilisateur à supprimer
+          schema:
+            type: string
+      security:
+        - BearerAuth: []  # Nécessite le JWT
+      responses:
+        '204':
+          description: Utilisateur supprimé avec succès
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT  # Spécifie que c'est un JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: clerk_user_id_12345
+        version:
+          type: integer
+          example: 1
+        pseudo:
+          type: string
+          example: john_doe
+        name:
+          type: string
+          example: John
+        surname:
+          type: string
+          example: Doe
+        email:
+          type: string
+          example: johndoe@example.com
+        sexe:
+          type: string
+          enum: [M, F]
+          example: M
+        phoneNumber:
+          type: string
+          example: "+1234567890"
+        activityStatus:
+          $ref: '#/components/schemas/ActivityStatus'
+        birthDate:
+          type: string
+          format: date-time
+          example: 1990-05-20T00:00:00Z
+        bankInfo:
+          $ref: '#/components/schemas/BankInfo'
+        avatarUrl:
+          type: string
+          example: "https://example.com/avatar.jpg"
+        isPremium:
+          type: boolean
+          example: false
+        favoriteArticles:
+          type: array
+          items:
+            type: string
+          example: ["article_id_1", "article_id_2"]
+        credit:
+          type: integer
+          example: 100
+        comments:
+          type: array
+          items:
+            type: string
+          example: ["comment_id_1", "comment_id_2"]
+        articles:
+          type: array
+          items:
+            type: string
+          example: ["article_id_1", "article_id_2"]
+        debit:
+          type: array
+          items:
+            type: string
+          example: ["debit_id_1", "debit_id_2"]
+
+    UserInput:
+      type: object
+      properties:
+        pseudo:
+          type: string
+          example: john_doe
+        name:
+          type: string
+          example: John
+        surname:
+          type: string
+          example: Doe
+        email:
+          type: string
+          example: johndoe@example.com
+        sexe:
+          type: string
+          enum: [M, F]
+          example: M
+        phoneNumber:
+          type: string
+          example: "+1234567890"
+        birthDate:
+          type: string
+          format: date-time
+          example: 1990-05-20T00:00:00Z
+        isPremium:
+          type: boolean
+          example: false
+
+    ActivityStatus:
+      type: object
+      properties:
+        lastConnected:
+          type: string
+          format: date-time
+          example: 2023-10-18T14:00:00Z
+        birthday:
+          type: string
+          format: date-time
+          example: 1990-05-20T00:00:00Z
+
+    BankInfo:
+      type: object
+      properties:
+        iban:
+          type: string
+          example: "FR7612345678901234567890123"
+        bic:
+          type: string
+          example: "AGRIFRPPXXX"
