@@ -15,7 +15,7 @@ func TestUser(t *testing.T) {
 	
 
 	now := time.Now()
-	address := []models.Address{{
+	addresses := []models.Address{{
 		Street:    "123 Test St",
 		City:      "Test City",
 		Postcode:  "12345",
@@ -37,7 +37,7 @@ func TestUser(t *testing.T) {
 		Pseudo:           "johndoe",
 		Name:             "John",
 		Surname:          "Doe",
-		Address:          address,
+		Addresses:        addresses,
 		Email:            "johndoe@example.com",
 		Sexe:             "M",
 		ActivityStatus:   activityStatus,
@@ -46,7 +46,8 @@ func TestUser(t *testing.T) {
 		FavoriteArticles: []string{"article1", "article2"},
 		Comments:         []string{"comment1", "comment2"},
 		Articles:         []string{"article1", "article2"},
-		Debit:            []string{"debit1", "debit2"},
+		Credit:           100,
+		Balance:          100,
 	}
 
 	if user.ID != id {
@@ -65,18 +66,18 @@ func TestUser(t *testing.T) {
 		t.Errorf("expected Surname to be 'Doe', got %s", user.Surname)
 	}
 	// Compare Address fields
-	assert.Equal(t, "123 Test St", user.Address[0].Street, "Street should match")
-	assert.Equal(t, "123 Test St", user.Address[0].Street, "Street in Address should match")
+	assert.Equal(t, "123 Test St", user.Addresses[0].Street, "Street should match")
+	assert.Equal(t, "123 Test St", user.Addresses[0].Street, "Street in Address should match")
 
-	assert.Equal(t, "Test City", user.Address[0].City, "City should match")
-	assert.Equal(t, "Test City", user.Address[0].City, "City in Address should match")
+	assert.Equal(t, "Test City", user.Addresses[0].City, "City should match")
+	assert.Equal(t, "Test City", user.Addresses[0].City, "City in Address should match")
 
-	assert.NotNil(t, user.Address[0].GeoPoints, "GeoPoints should not be nil")
-	assert.Equal(t, "Point", user.Address[0].GeoPoints.Type, "GeoPoints Type should be 'Point'")
+	assert.NotNil(t, user.Addresses[0].GeoPoints, "GeoPoints should not be nil")
+	assert.Equal(t, "Point", user.Addresses[0].GeoPoints.Type, "GeoPoints Type should be 'Point'")
 
-	assert.Len(t, user.Address[0].GeoPoints.Coordinates, 2, "GeoPoints should have 2 coordinates")
-	assert.Equal(t, 1.23, user.Address[0].GeoPoints.Coordinates[0], "Latitude should match")
-	assert.Equal(t, 4.56, user.Address[0].GeoPoints.Coordinates[1], "Longitude should match")
+	assert.Len(t, user.Addresses[0].GeoPoints.Coordinates, 2, "GeoPoints should have 2 coordinates")
+	assert.Equal(t, 1.23, user.Addresses[0].GeoPoints.Coordinates[0], "Latitude should match")
+	assert.Equal(t, 4.56, user.Addresses[0].GeoPoints.Coordinates[1], "Longitude should match")
 
 	if user.Email != "johndoe@example.com" {
 		t.Errorf("expected Email to be 'johndoe@example.com', got %s", user.Email)
@@ -103,7 +104,10 @@ func TestUser(t *testing.T) {
 	if len(user.Articles) != 2 || user.Articles[0] != "article1" || user.Articles[1] != "article2" {
 		t.Errorf("expected Articles to be ['article1', 'article2'], got %v", user.Articles)
 	}
-	if len(user.Debit) != 2 || user.Debit[0] != "debit1" || user.Debit[1] != "debit2" {
-		t.Errorf("expected Debit to be ['debit1', 'debit2'], got %v", user.Debit)
+	if user.Credit != 100 {
+		t.Errorf("expected Credit to be 100, got %f", user.Credit)
+	}
+	if user.Balance != 100 {
+		t.Errorf("expected Balance to be 100, got %f", user.Balance)
 	}
 }

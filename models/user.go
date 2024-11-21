@@ -38,7 +38,7 @@ type User struct {
 	Pseudo           string         `json:"pseudo" bson:"pseudo" validate:"required"`
 	Name             string         `json:"name,omitempty" bson:"name,omitempty" validate:"required"`
 	Surname          string         `json:"surname,omitempty" bson:"surname,omitempty" validate:"required"`
-	Address          []Address      `json:"address,omitempty" bson:"address,omitempty"`
+	Addresses        []Address      `json:"addresses,omitempty" bson:"addresses,omitempty"`
 	Email            string         `json:"email" bson:"email,omitempty" validate:"required,email"`
 	Sexe             string         `json:"sexe,omitempty" bson:"sexe,omitempty" validate:"oneof=M F"`
 	PhoneNumber      string         `json:"phoneNumber,omitempty" bson:"phoneNumber,omitempty" validate:"omitempty,e164"`
@@ -46,11 +46,10 @@ type User struct {
 	BirthDate        time.Time      `json:"birthDate,omitempty" bson:"birthDate,omitempty"`
 	BankInfo         *BankInfo      `json:"bankInfo,omitempty" bson:"bankInfo,omitempty"`
 	AvatarUrl        string         `json:"avatarUrl,omitempty" bson:"avatarUrl,omitempty"`
-	IsPremium        bool           `json:"isPremium,omitempty" bson:"isPremium,omitempty"`
+	IsPremium        bool           `json:"isPremium,omitempty" bson:"isPremium"`
 	FavoriteArticles []string       `json:"favoriteArticles,omitempty" bson:"favoriteArticles,omitempty"`
-	Credit           float64        `json:"credit,omitempty" bson:"credit,omitempty"`
-	Balance          float64        `json:"balance,omitempty" bson:"balance,omitempty"`
+	Credit           float64        `json:"credit,omitempty" bson:"credit"`
+	Balance          float64        `json:"balance,omitempty" bson:"balance"`
 	Comments         []string       `json:"comments,omitempty" bson:"comments,omitempty"`
 	Articles         []string       `json:"articles,omitempty" bson:"articles,omitempty"`
-	Debit            []string       `json:"debit,omitempty" bson:"debit,omitempty"`
 }

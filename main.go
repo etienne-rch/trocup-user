@@ -24,16 +24,27 @@ func main() {
 	_ = godotenv.Load()
 
 	app := fiber.New(fiber.Config{
+		Network: "tcp",
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,
 		IdleTimeout:  120 * time.Second,
+		AppName: "Trocup User Microservice",
 	})
 
+	
+	// Get allowed origins from environment variable
+	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+	
+
 	// CORS activation for all routes
-    app.Use(cors.New(cors.Config{
-        AllowOrigins: "*", // Enable access from all domains
-        AllowMethods: "GET,POST,HEAD,PUT,DELETE,OPTIONS", // Allowed HTTP methods
-    }))
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     allowedOrigins,
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		ExposeHeaders:    "Content-Length",
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
 
     // Initialize MongoDB
     config.InitMongo()
